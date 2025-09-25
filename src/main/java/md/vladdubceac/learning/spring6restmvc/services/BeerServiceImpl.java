@@ -27,7 +27,7 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("2.99"))
                 .quantityOnHand(123)
                 .createdDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
 
         Beer beer2 = Beer.builder()
@@ -39,7 +39,7 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("2.49"))
                 .quantityOnHand(234)
                 .createdDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
 
         Beer beer3 = Beer.builder()
@@ -51,7 +51,7 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("2.09"))
                 .quantityOnHand(345)
                 .createdDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
 
         beerMap.put(beer1.getId(), beer1);
