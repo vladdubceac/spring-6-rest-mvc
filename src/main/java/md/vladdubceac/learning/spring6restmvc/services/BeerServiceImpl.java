@@ -61,7 +61,7 @@ public class BeerServiceImpl implements BeerService {
             existing.setVersion(beer.getVersion());
         }
         existing.setUpdatedDate(LocalDateTime.now());
-        beerMap.put(id, existing);
+//        beerMap.put(id, existing);
         return existing;
     }
 }
