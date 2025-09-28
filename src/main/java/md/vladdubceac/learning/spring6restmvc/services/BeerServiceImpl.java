@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.Beer;
 import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -68,5 +69,43 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public void delete(UUID id) {
         beerMap.remove(id);
+    }
+
+    @Override
+    public void patchById(UUID id, Beer beer) {
+        Beer existingBeer = beerMap.get(id);
+        if (existingBeer == null) {
+            return;
+        }
+
+        if (StringUtils.hasText(beer.getBeerName())) {
+            existingBeer.setBeerName(beer.getBeerName());
+        }
+
+        if (beer.getBeerStyle() != null) {
+            existingBeer.setBeerStyle(beer.getBeerStyle());
+        }
+
+        if (beer.getPrice() != null) {
+            existingBeer.setPrice(beer.getPrice());
+        }
+
+        if(beer.getVersion()!=null){
+            existingBeer.setVersion(beer.getVersion());
+        }
+
+        if(beer.getQuantityOnHand()!=null) {
+            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+
+        if(StringUtils.hasText(beer.getUpc())){
+            existingBeer.setUpc(beer.getUpc());
+        }
+
+        if(beer.getCreatedDate()!=null) {
+            existingBeer.setCreatedDate(beer.getCreatedDate());
+        }
+
+        existingBeer.setUpdatedDate(LocalDateTime.now());
     }
 }
