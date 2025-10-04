@@ -1,6 +1,5 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.Beer;

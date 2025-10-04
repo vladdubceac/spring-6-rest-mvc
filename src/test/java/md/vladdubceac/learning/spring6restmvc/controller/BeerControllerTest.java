@@ -16,8 +16,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @Slf4j
 @WebMvcTest(BeerController.class)
@@ -36,13 +37,16 @@ class BeerControllerTest {
         log.debug("Test start " + Instant.now());
 
         Beer testBeer = beerServiceImpl.listBeers().get(0);
-        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
+        UUID beerId = testBeer.getId();
+        given(beerService.getBeerById(beerId)).willReturn(testBeer);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/v1/beer/"+ UUID.randomUUID())
+                .get("/api/v1/beer/"+ beerId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(beerId.toString())))
+                .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
         log.debug("Test end " + Instant.now());
     }
 }
