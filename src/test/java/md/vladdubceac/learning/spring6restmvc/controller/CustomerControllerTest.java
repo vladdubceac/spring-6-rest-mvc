@@ -1,8 +1,10 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import md.vladdubceac.learning.spring6restmvc.model.Customer;
 import md.vladdubceac.learning.spring6restmvc.services.CustomerService;
 import md.vladdubceac.learning.spring6restmvc.services.CustomerServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,8 +16,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -27,7 +31,15 @@ class CustomerControllerTest {
     @MockitoBean
     CustomerService customerService;
 
-    private CustomerServiceImpl customerServiceImpl = new CustomerServiceImpl();
+    @Autowired
+    ObjectMapper objectMapper;
+
+    private CustomerServiceImpl customerServiceImpl;
+
+    @BeforeEach
+    void setUp(){
+        customerServiceImpl = new CustomerServiceImpl();
+    }
 
     @Test
     void testGetCustomers() throws Exception {
@@ -42,7 +54,7 @@ class CustomerControllerTest {
 
     @Test
     void testGetCustomerById() throws Exception {
-        Customer testCustomer = customerServiceImpl.getCustomers().get(0);
+        Customer testCustomer = customerServiceImpl.getCustomers().getFirst();
         UUID id = testCustomer.getId();
         given(customerService.getCustomerById(id)).willReturn(testCustomer);
 
@@ -53,5 +65,21 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.id", is(id.toString())))
                 .andExpect(jsonPath("$.name", is(testCustomer.getName())))
                 .andExpect(jsonPath("$.version", is(testCustomer.getVersion())));
+    }
+
+    @Test
+    void testCreateNewCustomer() throws Exception {
+        Customer customer = Customer.builder()
+                        .name("New customer")
+                                .version(1)
+                                        .build();
+        given(customerService.saveCustomer(any(Customer.class))).willReturn(customerServiceImpl.getCustomers().getFirst());
+
+        mockMvc.perform(post("/api/v1/customer")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
     }
 }
