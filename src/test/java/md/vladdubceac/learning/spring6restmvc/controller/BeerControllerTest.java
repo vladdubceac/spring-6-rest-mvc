@@ -60,7 +60,7 @@ class BeerControllerTest {
     void testListBeers() throws Exception {
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
 
-        mockMvc.perform(get("/api/v1/beer")
+        mockMvc.perform(get(BeerController.PATH)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +75,7 @@ class BeerControllerTest {
         UUID beerId = testBeer.getId();
         given(beerService.getBeerById(beerId)).willReturn(testBeer);
 
-        mockMvc.perform(get("/api/v1/beer/" + beerId)
+        mockMvc.perform(get(BeerController.PATH + beerId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ class BeerControllerTest {
 
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().getFirst());
 
-        mockMvc.perform(post("/api/v1/beer")
+        mockMvc.perform(post(BeerController.PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -104,7 +104,7 @@ class BeerControllerTest {
     void testUpdateBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().getFirst();
 
-        mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+        mockMvc.perform(put(BeerController.PATH + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -118,7 +118,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().getFirst();
         UUID id = beer.getId();
 
-        mockMvc.perform(delete("/api/v1/beer/" + id)
+        mockMvc.perform(delete(BeerController.PATH + id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -136,7 +136,7 @@ class BeerControllerTest {
         beerMap.put("version", 2);
         beerMap.put("price", BigDecimal.TEN.add(beer.getPrice()));
 
-        mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+        mockMvc.perform(patch(BeerController.PATH + beer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
