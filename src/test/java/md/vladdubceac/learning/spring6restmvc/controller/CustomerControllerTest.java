@@ -1,5 +1,6 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import md.vladdubceac.learning.spring6restmvc.model.Beer;
 import md.vladdubceac.learning.spring6restmvc.model.Customer;
@@ -16,6 +17,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +46,9 @@ class CustomerControllerTest {
 
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
 
     @BeforeEach
     void setUp(){
@@ -115,5 +122,25 @@ class CustomerControllerTest {
 
         verify(customerService).delete(uuidArgumentCaptor.capture());
         assertThat(id).isEqualTo(uuidArgumentCaptor.getValue());
+    }
+
+    @Test
+    void testPatchById() throws Exception {
+        Customer customer = customerServiceImpl.getCustomers().getFirst();
+        UUID id = customer.getId();
+
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("name", "Updated customer");
+
+        mockMvc.perform(patch("/api/v1/customer/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateMap)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).patchById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+
+        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(updateMap.get("name")).isEqualTo(customerArgumentCaptor.getValue().getName());
     }
 }
