@@ -6,6 +6,7 @@ import md.vladdubceac.learning.spring6restmvc.model.Beer;
 import md.vladdubceac.learning.spring6restmvc.model.Customer;
 import md.vladdubceac.learning.spring6restmvc.services.CustomerService;
 import md.vladdubceac.learning.spring6restmvc.services.CustomerServiceImpl;
+import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -142,5 +143,13 @@ class CustomerControllerTest {
 
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
         assertThat(updateMap.get("name")).isEqualTo(customerArgumentCaptor.getValue().getName());
+    }
+
+    @Test
+    void testGetCustomerByIdNotFound () throws Exception {
+        given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        mockMvc.perform(get(CustomerController.PATH_ID, UUID.randomUUID()))
+                .andExpect(status().isNotFound());
     }
 }
