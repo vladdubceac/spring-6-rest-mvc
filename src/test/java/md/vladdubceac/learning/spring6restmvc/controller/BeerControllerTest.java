@@ -149,6 +149,7 @@ class BeerControllerTest {
         assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
     }
 
+    @Test
     void testGetBeerByIdNotFound() throws Exception {
         given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
 

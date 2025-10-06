@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.Beer;
 import md.vladdubceac.learning.spring6restmvc.services.BeerService;
+import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,5 +60,11 @@ public class BeerController {
         log.debug("Get Beer by ID - in container");
 
         return beerService.getBeerById(beerId);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException() {
+        log.error("Handling NotFoundException ... ");
+        return ResponseEntity.notFound().build();
     }
 }
