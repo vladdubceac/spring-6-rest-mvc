@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +72,7 @@ class CustomerControllerTest {
     void testGetCustomerById() throws Exception {
         Customer testCustomer = customerServiceImpl.getCustomers().getFirst();
         UUID id = testCustomer.getId();
-        given(customerService.getCustomerById(id)).willReturn(testCustomer);
+        given(customerService.getCustomerById(id)).willReturn(Optional.of(testCustomer));
 
         mockMvc.perform(get(CustomerController.PATH+ id)
                         .accept(MediaType.APPLICATION_JSON))
@@ -147,7 +148,7 @@ class CustomerControllerTest {
 
     @Test
     void testGetCustomerByIdNotFound () throws Exception {
-        given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(customerService.getCustomerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(CustomerController.PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());

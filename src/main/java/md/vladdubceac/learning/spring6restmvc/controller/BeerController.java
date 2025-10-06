@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -59,6 +60,6 @@ public class BeerController {
 
         log.debug("Get Beer by ID - in container");
 
-        return beerService.getBeerById(beerId);
+        return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
     }
 }

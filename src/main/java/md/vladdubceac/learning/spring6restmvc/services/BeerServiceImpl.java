@@ -3,6 +3,7 @@ package md.vladdubceac.learning.spring6restmvc.services;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.Beer;
 import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
+import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,11 +32,11 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
+    public Optional<Beer> getBeerById(UUID id) {
 
         log.debug("Get Beer by ID - in service. ID = " + id.toString());
 
-        return beerMap.get(id);
+        return Optional.of(beerMap.get(id));
     }
 
     @Override

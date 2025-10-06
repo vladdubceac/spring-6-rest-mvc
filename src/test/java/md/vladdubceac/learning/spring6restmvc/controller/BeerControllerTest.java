@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +75,7 @@ class BeerControllerTest {
 
         Beer testBeer = beerServiceImpl.listBeers().getFirst();
         UUID beerId = testBeer.getId();
-        given(beerService.getBeerById(beerId)).willReturn(testBeer);
+        given(beerService.getBeerById(beerId)).willReturn(Optional.ofNullable(testBeer));
 
         mockMvc.perform(get(BeerController.PATH + beerId)
                         .accept(MediaType.APPLICATION_JSON))
@@ -151,7 +152,7 @@ class BeerControllerTest {
 
     @Test
     void testGetBeerByIdNotFound() throws Exception {
-        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(BeerController.PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());

@@ -3,6 +3,7 @@ package md.vladdubceac.learning.spring6restmvc.controller;
 import lombok.RequiredArgsConstructor;
 import md.vladdubceac.learning.spring6restmvc.model.Customer;
 import md.vladdubceac.learning.spring6restmvc.services.CustomerService;
+import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,6 @@ public class CustomerController {
 
     @GetMapping(PATH_ID)
     public Customer getCustomerById(@PathVariable(ID_VARIABLE) UUID customerId) {
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 }
