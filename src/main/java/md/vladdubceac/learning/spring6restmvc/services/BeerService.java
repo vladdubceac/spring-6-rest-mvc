@@ -1,21 +1,21 @@
 package md.vladdubceac.learning.spring6restmvc.services;
 
-import md.vladdubceac.learning.spring6restmvc.model.Beer;
+import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface BeerService {
-    Optional<Beer> getBeerById(UUID id);
+    Optional<BeerDTO> getBeerById(UUID id);
 
-    List<Beer> listBeers();
+    List<BeerDTO> listBeers();
 
-    Beer saveNewBeer(Beer beer);
+    BeerDTO saveNewBeer(BeerDTO beer);
 
-    Beer updateById(UUID id, Beer beer);
+    BeerDTO updateById(UUID id, BeerDTO beer);
 
     void delete(UUID id);
 
-    void patchById(UUID id, Beer beer);
+    void patchById(UUID id, BeerDTO beer);
 }
