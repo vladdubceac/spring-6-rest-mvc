@@ -8,9 +8,11 @@ import md.vladdubceac.learning.spring6restmvc.repositories.BeerRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,8 +44,22 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public BeerDTO updateById(UUID id, BeerDTO beerDTO) {
-        return null;
+    public Optional<BeerDTO> updateById(UUID id, BeerDTO beerDTO) {
+        Optional<Beer> result = beerRepository.findById(id);
+        BeerDTO updatedDTO = null;
+        if (result.isPresent()) {
+            Beer founded = result.get();
+            founded.setBeerStyle(beerDTO.getBeerStyle());
+            founded.setBeerName(beerDTO.getBeerName());
+            founded.setPrice(beerDTO.getPrice());
+            founded.setUpc(beerDTO.getUpc());
+            founded.setQuantityOnHand(beerDTO.getQuantityOnHand());
+            founded.setVersion(beerDTO.getVersion());
+            founded.setCreatedDate(beerDTO.getCreatedDate());
+            founded.setUpdatedDate(Optional.ofNullable(beerDTO.getUpdatedDate()).orElse(LocalDateTime.now()));
+            updatedDTO = beerMapper.beerToBeerDTO(beerRepository.save(founded));
+        }
+        return Optional.ofNullable(updatedDTO);
     }
 
     @Override
