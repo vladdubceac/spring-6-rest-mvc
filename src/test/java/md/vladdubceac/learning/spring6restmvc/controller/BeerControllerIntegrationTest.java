@@ -104,4 +104,23 @@ class BeerControllerIntegrationTest {
         List<BeerDTO> beerDTOList = beerController.listBeers();
         assertThat(beerDTOList.size()).isEqualTo(0);
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    void testDeleteByIdFound(){
+        Beer beer = beerRepository.findAll().getFirst();
+
+        ResponseEntity responseEntity = beerController.delete(beer.getId());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(beerRepository.findById(beer.getId()).isEmpty());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void testDeleteByIdNotFound(){
+        UUID id = UUID.randomUUID();
+        assertThrows(NotFoundException.class, () -> beerController.delete(id));
+    }
 }

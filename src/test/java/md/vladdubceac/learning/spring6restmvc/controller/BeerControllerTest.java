@@ -121,6 +121,8 @@ class BeerControllerTest {
         BeerDTO beer = beerServiceImpl.listBeers().getFirst();
         UUID id = beer.getId();
 
+        given(beerService.delete(id)).willReturn(true);
+
         mockMvc.perform(delete(BeerController.PATH + id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
