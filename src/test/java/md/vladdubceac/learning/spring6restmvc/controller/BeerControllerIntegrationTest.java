@@ -110,7 +110,6 @@ class BeerControllerIntegrationTest {
     @Rollback
     void testDeleteByIdFound(){
         Beer beer = beerRepository.findAll().getFirst();
-
         ResponseEntity responseEntity = beerController.delete(beer.getId());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(beerRepository.findById(beer.getId()).isEmpty());
@@ -122,5 +121,28 @@ class BeerControllerIntegrationTest {
     void testDeleteByIdNotFound(){
         UUID id = UUID.randomUUID();
         assertThrows(NotFoundException.class, () -> beerController.delete(id));
+    }
+
+    @Test
+    void testPatchByIdNotFound() {
+        assertThrows(NotFoundException.class, () ->
+                beerController.patchById(UUID.randomUUID(), BeerDTO.builder().build()));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void testPatchBeer() {
+        Beer beer = beerRepository.findAll().getFirst();
+        BeerDTO beerDTO = beerMapper.beerToBeerDTO(beer);
+        beerDTO.setBeerName("Patched beer");
+
+        ResponseEntity responseEntity = beerController.patchById(beer.getId(), beerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getBeerName()).isEqualTo(beerDTO.getBeerName());
+
     }
 }

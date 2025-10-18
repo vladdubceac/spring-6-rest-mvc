@@ -141,6 +141,8 @@ class BeerControllerTest {
         beerMap.put("version", 2);
         beerMap.put("price", BigDecimal.TEN.add(beer.getPrice()));
 
+        given(beerService.patchById(any(UUID.class), any() )).willReturn(Optional.ofNullable(beer));
+
         mockMvc.perform(patch(BeerController.PATH + beer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

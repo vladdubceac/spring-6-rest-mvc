@@ -64,7 +64,7 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public boolean delete(UUID id) {
-        if(beerRepository.existsById(id)) {
+        if (beerRepository.existsById(id)) {
             beerRepository.deleteById(id);
             return true;
         }
@@ -72,7 +72,20 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void patchById(UUID id, BeerDTO beer) {
-
+    public Optional<BeerDTO> patchById(UUID id, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
+        beerRepository.findById(id).ifPresentOrElse(found -> {
+                    found.setPrice(beer.getPrice());
+                    found.setBeerStyle(beer.getBeerStyle());
+                    found.setBeerName(beer.getBeerName());
+                    found.setUpc(beer.getUpc());
+                    found.setQuantityOnHand(beer.getQuantityOnHand());
+                    found.setVersion(beer.getVersion());
+                    found.setCreatedDate(beer.getCreatedDate());
+                    found.setUpdatedDate(Optional.ofNullable(found.getUpdatedDate()).orElse(LocalDateTime.now()));
+                    atomicReference.set(Optional.of(beerMapper.beerToBeerDTO(beerRepository.save(found))));
+                },
+                () -> atomicReference.set(Optional.empty()));
+        return atomicReference.get();
     }
 }

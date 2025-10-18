@@ -97,22 +97,24 @@ class CustomerControllerTest {
 
     @Test
     void testUpdateById() throws Exception {
-        CustomerDTO customer = customerServiceImpl.getCustomers().getFirst();
-        UUID id = customer.getId();
-
+        CustomerDTO dto = customerServiceImpl.getCustomers().getFirst();
+        UUID id = dto.getId();
+        given(customerService.updateCustomer(any(), any())).willReturn(Optional.of(dto));
         mockMvc.perform(put(CustomerController.PATH+id)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(customer)))
+                .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomer(id, customer);
+        verify(customerService).updateCustomer(id, dto);
     }
 
     @Test
     void testDeleteCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.getCustomers().getFirst();
         UUID id = customer.getId();
+
+        given(customerService.delete(id)).willReturn(true);
 
         mockMvc.perform(delete(CustomerController.PATH + id)
                         .accept(MediaType.APPLICATION_JSON))

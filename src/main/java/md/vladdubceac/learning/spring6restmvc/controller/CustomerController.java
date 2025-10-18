@@ -10,32 +10,38 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 public class CustomerController {
-    private final CustomerService customerService;
-
     public static final String ID_VARIABLE = "id";
     public static final String PATH = "/api/v1/customer/";
     public static final String PATH_ID = PATH + "{" + ID_VARIABLE + "}";
+    private final CustomerService customerService;
 
     @PatchMapping(PATH_ID)
-    public ResponseEntity patchById(@PathVariable(ID_VARIABLE)UUID id, @RequestBody CustomerDTO customer) {
+    public ResponseEntity patchById(@PathVariable(ID_VARIABLE) UUID id, @RequestBody CustomerDTO customer) {
         customerService.patchById(id, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(PATH_ID)
     public ResponseEntity deleteCustomer(@PathVariable(ID_VARIABLE) UUID id) {
-        customerService.delete(id);
+        boolean isDeleted = customerService.delete(id);
+        if (!isDeleted) {
+            throw new NotFoundException();
+        }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(PATH_ID)
     public ResponseEntity updateCustomer(@PathVariable(ID_VARIABLE) UUID id, @RequestBody CustomerDTO customer) {
-        customerService.updateCustomer(id, customer);
+        Optional<CustomerDTO> resultOptional = customerService.updateCustomer(id, customer);
+        if (resultOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -43,7 +49,7 @@ public class CustomerController {
     public ResponseEntity createCustomer(@RequestBody CustomerDTO customer) {
         CustomerDTO savedCustomer = customerService.saveCustomer(customer);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Location", PATH+ savedCustomer.getId().toString());
+        httpHeaders.add("Location", PATH + savedCustomer.getId().toString());
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
