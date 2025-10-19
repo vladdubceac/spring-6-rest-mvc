@@ -8,6 +8,7 @@ import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class BeerController {
     }
 
     @PostMapping(PATH)
-    public ResponseEntity handlePost(@RequestBody BeerDTO beer) {
+    public ResponseEntity handlePost(@Validated @RequestBody BeerDTO beer) {
         BeerDTO beerSaved = beerService.saveNewBeer(beer);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Location", PATH + beerSaved.getId().toString());

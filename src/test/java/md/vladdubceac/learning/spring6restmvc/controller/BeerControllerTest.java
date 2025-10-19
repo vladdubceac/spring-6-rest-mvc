@@ -1,5 +1,6 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
@@ -161,5 +162,18 @@ class BeerControllerTest {
 
         mockMvc.perform(get(BeerController.PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateBeerNullBeerName() throws Exception {
+        BeerDTO beerDTO = BeerDTO.builder().build();
+
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
+
+        mockMvc.perform(post(BeerController.PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isBadRequest());
     }
 }
