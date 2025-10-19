@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
+import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.services.BeerService;
 import md.vladdubceac.learning.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,22 +89,6 @@ class BeerControllerTest {
     }
 
     @Test
-    void testCreateNewBeer() throws Exception {
-        BeerDTO beer = BeerDTO.builder().beerName("My Beer")
-                .upc("01")
-                .version(1).price(BigDecimal.TEN).build();
-
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
-
-        mockMvc.perform(post(BeerController.PATH)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(beer)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"));
-    }
-
-    @Test
     void testUpdateBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().getFirst();
 
@@ -116,6 +101,39 @@ class BeerControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(beerService).updateById(beer.getId(), beer);
+    }
+
+    @Test
+    void testUpdateBeerEmptyName() throws Exception {
+        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        beer.setBeerName("");
+        given(beerService.updateById(any(),any())).willReturn(Optional.ofNullable(beerServiceImpl.listBeers().getFirst()));
+
+        mockMvc.perform(put(BeerController.PATH + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(1)));
+
+//        verify(beerService).updateById(beer.getId(), beer);
+    }
+
+    @Test
+    void testCreateNewBeer() throws Exception {
+        BeerDTO beer = BeerDTO.builder().beerName("My Beer")
+                .beerStyle(BeerStyle.WHEAT)
+                .upc("01")
+                .version(1).price(BigDecimal.TEN).build();
+
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
+
+        mockMvc.perform(post(BeerController.PATH)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
     }
 
     @Test
@@ -175,6 +193,7 @@ class BeerControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(jsonPath("$.length()",is(6)))
                 .andExpect(status().isBadRequest()).andReturn();
 
         System.out.println(mvcResult.getResponse().getContentAsString());
