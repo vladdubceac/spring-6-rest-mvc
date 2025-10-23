@@ -1,25 +1,40 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import md.vladdubceac.learning.spring6restmvc.entities.Beer;
 import md.vladdubceac.learning.spring6restmvc.mappers.BeerMapper;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
+import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.repositories.BeerRepository;
 import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class BeerControllerIntegrationTest {
@@ -31,6 +46,40 @@ class BeerControllerIntegrationTest {
 
     @Autowired
     BeerMapper beerMapper;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    WebApplicationContext wac;
+
+    MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+    @Test
+    void testPatchBeerBadName() throws Exception {
+        Beer beer = beerRepository.findAll().getFirst();
+
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "New Name  1234567890 1234567890 1234567890 1234567890");
+        beerMap.put("beerStyle", BeerStyle.WHEAT);
+        beerMap.put("upc","0123");
+        beerMap.put("version", 2);
+        beerMap.put("price", BigDecimal.TEN.add(beer.getPrice()));
+        MvcResult result = mockMvc.perform(patch(BeerController.PATH + beer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andReturn();
+        System.out.println(result.getResponse().getContentAsString());
+    }
+
 
     @Test
     @Transactional
@@ -108,7 +157,7 @@ class BeerControllerIntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void testDeleteByIdFound(){
+    void testDeleteByIdFound() {
         Beer beer = beerRepository.findAll().getFirst();
         ResponseEntity responseEntity = beerController.delete(beer.getId());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -118,7 +167,7 @@ class BeerControllerIntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void testDeleteByIdNotFound(){
+    void testDeleteByIdNotFound() {
         UUID id = UUID.randomUUID();
         assertThrows(NotFoundException.class, () -> beerController.delete(id));
     }
