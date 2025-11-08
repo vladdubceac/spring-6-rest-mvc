@@ -14,7 +14,7 @@ create table beer
     updated_date     datetime(6),
     version          integer,
     primary key (id)
-) ;
+) engine=InnoDB;;
 
 create table customer
 (
@@ -24,4 +24,4 @@ create table customer
     updated_date datetime(6),
     version      integer,
     primary key (id)
-) ;
+) engine=InnoDB;
