@@ -20,7 +20,7 @@ class BeerCsvServiceImplTest {
         File file = ResourceUtils.getFile("classpath:csvdata/beers.csv");
 
         List<BeerCSVRecord> recs = beerCsvService.convertCSV(file);
-        recs.forEach(System.out::println);
+
         System.out.println(recs.size());
 
         assertThat(recs.size()).isGreaterThan(0);
