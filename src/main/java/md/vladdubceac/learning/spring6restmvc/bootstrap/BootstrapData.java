@@ -60,7 +60,6 @@ public class BootstrapData implements CommandLineRunner {
                         .beerStyle(beerStyle)
                         .price(BigDecimal.TEN)
                         .upc(beerCSVRecord.getRow().toString())
-                        .createdDate(LocalDateTime.now())
                         .quantityOnHand(beerCSVRecord.getCount())
                         .build());
             });
@@ -75,8 +74,6 @@ public class BootstrapData implements CommandLineRunner {
                     .upc("123456")
                     .price(new BigDecimal("2.99"))
                     .quantityOnHand(123)
-                    .createdDate(LocalDateTime.now())
-                    .updatedDate(LocalDateTime.now())
                     .build();
             Beer beer2 = Beer.builder()
                     .beerName("Vitanta")
@@ -84,8 +81,6 @@ public class BootstrapData implements CommandLineRunner {
                     .upc("123456")
                     .price(new BigDecimal("2.49"))
                     .quantityOnHand(234)
-                    .createdDate(LocalDateTime.now())
-                    .updatedDate(LocalDateTime.now())
                     .build();
             Beer beer3 = Beer.builder()
                     .beerName("Orasul meu")
@@ -93,8 +88,6 @@ public class BootstrapData implements CommandLineRunner {
                     .upc("2345")
                     .price(new BigDecimal("2.09"))
                     .quantityOnHand(345)
-                    .createdDate(LocalDateTime.now())
-                    .updatedDate(LocalDateTime.now())
                     .build();
 
             beerRepository.save(beer1);
