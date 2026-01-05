@@ -142,7 +142,7 @@ class BeerControllerIntegrationTest {
         List<BeerDTO> beerDTOList = beerController.listBeers();
         assertNotNull(beerDTOList);
         assertThat(beerDTOList).isNotEmpty();
-        assertThat(beerDTOList.size()).isEqualTo(3);
+        assertThat(beerDTOList.size()).isEqualTo(2413);
     }
 
     @Rollback
