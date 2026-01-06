@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,6 +59,14 @@ class BeerControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+    @Test
+    void testListBeersByName() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerName","IPA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(336)));
     }
 
     @Test
@@ -139,7 +148,7 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beerDTOList = beerController.listBeers();
+        List<BeerDTO> beerDTOList = beerController.listBeers(null);
         assertNotNull(beerDTOList);
         assertThat(beerDTOList).isNotEmpty();
         assertThat(beerDTOList.size()).isEqualTo(2413);
@@ -150,7 +159,7 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> beerDTOList = beerController.listBeers();
+        List<BeerDTO> beerDTOList = beerController.listBeers(null);
         assertThat(beerDTOList.size()).isEqualTo(0);
     }
 

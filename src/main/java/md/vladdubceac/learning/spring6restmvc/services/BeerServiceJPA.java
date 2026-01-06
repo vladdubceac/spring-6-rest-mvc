@@ -7,8 +7,10 @@ import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
 import md.vladdubceac.learning.spring6restmvc.repositories.BeerRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,11 +31,23 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return beerRepository.findAll()
+    public List<BeerDTO> listBeers(String beerName) {
+        List<Beer> beerList;
+
+        if(StringUtils.hasText(beerName)) {
+            beerList = listBeersByName(beerName);
+        } else {
+            beerList = beerRepository.findAll();
+        }
+
+        return beerList
                 .stream()
                 .map(beerMapper::beerToBeerDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<Beer> listBeersByName(String beerName) {
+        return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%");
     }
 
     @Override

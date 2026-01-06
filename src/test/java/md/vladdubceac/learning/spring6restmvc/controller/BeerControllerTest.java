@@ -1,6 +1,5 @@
 package md.vladdubceac.learning.spring6restmvc.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
@@ -62,7 +61,7 @@ class BeerControllerTest {
 
     @Test
     void testListBeers() throws Exception {
-        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
+        given(beerService.listBeers(null)).willReturn(beerServiceImpl.listBeers(null));
 
         mockMvc.perform(get(BeerController.PATH)
                         .accept(MediaType.APPLICATION_JSON))
@@ -75,7 +74,7 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         log.debug("Test start " + Instant.now());
 
-        BeerDTO testBeer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO testBeer = beerServiceImpl.listBeers(null).getFirst();
         UUID beerId = testBeer.getId();
         given(beerService.getBeerById(beerId)).willReturn(Optional.ofNullable(testBeer));
 
@@ -90,9 +89,9 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers(null).getFirst();
 
-        given(beerService.updateById(any(),any())).willReturn(Optional.ofNullable(beerServiceImpl.listBeers().getFirst()));
+        given(beerService.updateById(any(),any())).willReturn(Optional.ofNullable(beerServiceImpl.listBeers(null).getFirst()));
 
         mockMvc.perform(put(BeerController.PATH + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -105,9 +104,9 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeerEmptyName() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers(null).getFirst();
         beer.setBeerName("");
-        given(beerService.updateById(any(),any())).willReturn(Optional.ofNullable(beerServiceImpl.listBeers().getFirst()));
+        given(beerService.updateById(any(),any())).willReturn(Optional.ofNullable(beerServiceImpl.listBeers(null).getFirst()));
 
         mockMvc.perform(put(BeerController.PATH + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -126,7 +125,7 @@ class BeerControllerTest {
                 .upc("01")
                 .version(1).price(BigDecimal.TEN).build();
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null).getFirst());
 
         mockMvc.perform(post(BeerController.PATH)
                         .accept(MediaType.APPLICATION_JSON)
@@ -138,7 +137,7 @@ class BeerControllerTest {
 
     @Test
     void testDeleteBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers(null).getFirst();
         UUID id = beer.getId();
 
         given(beerService.delete(id)).willReturn(true);
@@ -154,7 +153,7 @@ class BeerControllerTest {
 
     @Test
     void testPatchBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers(null).getFirst();
 
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New Name");
@@ -187,7 +186,7 @@ class BeerControllerTest {
     void testCreateBeerNullBeerName() throws Exception {
         BeerDTO beerDTO = BeerDTO.builder().build();
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null).getFirst());
 
         MvcResult mvcResult = mockMvc.perform(post(BeerController.PATH)
                 .accept(MediaType.APPLICATION_JSON)
