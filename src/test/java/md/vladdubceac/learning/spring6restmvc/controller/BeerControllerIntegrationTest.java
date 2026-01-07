@@ -62,6 +62,23 @@ class BeerControllerIntegrationTest {
     }
 
     @Test
+    void testListBeersByStyle() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerStyle", BeerStyle.IPA.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(547)));
+    }
+
+    @Test
+    void testListBeersByNameAndStyle() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerName","big")
+                .queryParam("beerStyle", BeerStyle.IPA.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(7)));
+    }
+
+    @Test
     void testListBeersByName() throws Exception {
         mockMvc.perform(get(BeerController.PATH)
                 .queryParam("beerName","IPA"))
@@ -148,7 +165,7 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beerDTOList = beerController.listBeers(null);
+        List<BeerDTO> beerDTOList = beerController.listBeers(null, null);
         assertNotNull(beerDTOList);
         assertThat(beerDTOList).isNotEmpty();
         assertThat(beerDTOList.size()).isEqualTo(2413);
@@ -159,7 +176,7 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> beerDTOList = beerController.listBeers(null);
+        List<BeerDTO> beerDTOList = beerController.listBeers(null, null);
         assertThat(beerDTOList.size()).isEqualTo(0);
     }
 

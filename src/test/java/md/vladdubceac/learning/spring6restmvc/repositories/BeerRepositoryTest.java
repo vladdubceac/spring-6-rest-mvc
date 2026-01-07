@@ -31,6 +31,22 @@ class BeerRepositoryTest {
     }
 
     @Test
+    void testGetBeerListByStyle(){
+        List<Beer> list = beerRepository.findAllByBeerStyle(BeerStyle.IPA);
+
+        assertThat(list.size()).isGreaterThanOrEqualTo(1);
+        assertThat(list.size()).isEqualTo(547);
+    }
+
+    @Test
+    void testGetBeerListByNameAndStyle(){
+        List<Beer> list = beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%big%",BeerStyle.IPA);
+
+        assertThat(list.size()).isGreaterThanOrEqualTo(1);
+        assertThat(list.size()).isEqualTo(7);
+    }
+
+    @Test
     void testSaveBeerNameTooLong() {
         assertThrows(ConstraintViolationException.class, () ->
                 {

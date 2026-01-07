@@ -3,6 +3,7 @@ package md.vladdubceac.learning.spring6restmvc.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
+import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.services.BeerService;
 import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -58,8 +59,8 @@ public class BeerController {
     }
 
     @GetMapping(PATH)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName) {
-        return beerService.listBeers(beerName);
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false)BeerStyle beerStyle) {
+        return beerService.listBeers(beerName, beerStyle);
     }
 
     @GetMapping(PATH_ID)

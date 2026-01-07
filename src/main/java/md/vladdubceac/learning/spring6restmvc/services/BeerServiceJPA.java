@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import md.vladdubceac.learning.spring6restmvc.entities.Beer;
 import md.vladdubceac.learning.spring6restmvc.mappers.BeerMapper;
 import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
+import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.repositories.BeerRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,11 +31,15 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers(String beerName) {
+    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle) {
         List<Beer> beerList;
 
-        if(StringUtils.hasText(beerName)) {
+        if (StringUtils.hasText(beerName) && beerStyle == null) {
             beerList = listBeersByName(beerName);
+        } else if (!StringUtils.hasText(beerName) && beerStyle != null) {
+            beerList = listBeersByStyle(beerStyle);
+        } else if (StringUtils.hasText(beerName) && beerStyle != null) {
+            beerList = listBeersByNameAndStyle(beerName, beerStyle);
         } else {
             beerList = beerRepository.findAll();
         }
@@ -48,6 +52,14 @@ public class BeerServiceJPA implements BeerService {
 
     public List<Beer> listBeersByName(String beerName) {
         return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%");
+    }
+
+    public List<Beer> listBeersByStyle(BeerStyle beerStyle) {
+        return beerRepository.findAllByBeerStyle(beerStyle);
+    }
+
+    public List<Beer> listBeersByNameAndStyle(String beerName, BeerStyle beerStyle) {
+        return beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%" + beerName + "%", beerStyle);
     }
 
     @Override
