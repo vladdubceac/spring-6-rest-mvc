@@ -7,6 +7,7 @@ import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
 import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.repositories.BeerRepository;
 import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,37 @@ class BeerControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+    @Test
+    void testListBeersByStyleAndNameShowInventoryTrue() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerName","IPA")
+                .queryParam("beerStyle",BeerStyle.IPA.name())
+                .queryParam("showInventory","true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(310)))
+                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testListBeersByStyleAndNameShowInventoryFalse() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerName","IPA")
+                .queryParam("beerStyle",BeerStyle.IPA.name())
+                .queryParam("showInventory","false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(310)))
+                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.nullValue()));
+    }
+
+    @Test
+    void testListBeersByStyleAndName() throws Exception {
+        mockMvc.perform(get(BeerController.PATH)
+                .queryParam("beerName","IPA")
+                .queryParam("beerStyle",BeerStyle.IPA.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(310)));
     }
 
     @Test
@@ -165,7 +197,7 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beerDTOList = beerController.listBeers(null, null);
+        List<BeerDTO> beerDTOList = beerController.listBeers(null, null, false);
         assertNotNull(beerDTOList);
         assertThat(beerDTOList).isNotEmpty();
         assertThat(beerDTOList.size()).isEqualTo(2413);
@@ -176,7 +208,7 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> beerDTOList = beerController.listBeers(null, null);
+        List<BeerDTO> beerDTOList = beerController.listBeers(null, null, false);
         assertThat(beerDTOList.size()).isEqualTo(0);
     }
 

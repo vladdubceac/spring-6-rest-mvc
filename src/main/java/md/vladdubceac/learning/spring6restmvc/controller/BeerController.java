@@ -27,7 +27,7 @@ public class BeerController {
 
     @PatchMapping(PATH_ID)
     public ResponseEntity patchById(@PathVariable(ID_VARIABLE) UUID id, @RequestBody BeerDTO beer) {
-        if(beerService.patchById(id, beer).isEmpty()){
+        if (beerService.patchById(id, beer).isEmpty()) {
             throw new NotFoundException();
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -36,7 +36,7 @@ public class BeerController {
     @DeleteMapping(PATH_ID)
     public ResponseEntity delete(@PathVariable(ID_VARIABLE) UUID id) {
         boolean deleted = beerService.delete(id);
-        if(!deleted) {
+        if (!deleted) {
             throw new NotFoundException();
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -44,7 +44,7 @@ public class BeerController {
 
     @PutMapping(PATH_ID)
     public ResponseEntity updateById(@PathVariable(ID_VARIABLE) UUID id, @Validated @RequestBody BeerDTO beer) {
-        if(beerService.updateById(id, beer).isEmpty()){
+        if (beerService.updateById(id, beer).isEmpty()) {
             throw new NotFoundException();
         }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -59,8 +59,8 @@ public class BeerController {
     }
 
     @GetMapping(PATH)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false)BeerStyle beerStyle) {
-        return beerService.listBeers(beerName, beerStyle);
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false) BeerStyle beerStyle, @RequestParam(required = false) Boolean showInventory) {
+        return beerService.listBeers(beerName, beerStyle, showInventory);
     }
 
     @GetMapping(PATH_ID)
