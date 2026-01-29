@@ -6,13 +6,13 @@ import md.vladdubceac.learning.spring6restmvc.model.BeerDTO;
 import md.vladdubceac.learning.spring6restmvc.model.BeerStyle;
 import md.vladdubceac.learning.spring6restmvc.services.BeerService;
 import md.vladdubceac.learning.spring6restmvc.utils.NotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -59,8 +59,10 @@ public class BeerController {
     }
 
     @GetMapping(PATH)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false) BeerStyle beerStyle, @RequestParam(required = false) Boolean showInventory) {
-        return beerService.listBeers(beerName, beerStyle, showInventory);
+    public Page<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false) BeerStyle beerStyle, @RequestParam(required = false) Boolean showInventory,
+                                   @RequestParam(required = false) Integer pageNumber,
+                                   @RequestParam(required = false) Integer pageSize) {
+        return beerService.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize);
     }
 
     @GetMapping(PATH_ID)
