@@ -39,7 +39,7 @@ public class BeerOrderLine {
     @ManyToOne
     private BeerOrder beerOrder;
 
-    @OneToMany
+    @ManyToOne
     private Beer beer;
 
     private Integer orderQuantity = 0;
