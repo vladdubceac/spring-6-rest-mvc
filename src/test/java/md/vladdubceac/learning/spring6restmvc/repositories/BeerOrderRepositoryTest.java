@@ -2,6 +2,7 @@ package md.vladdubceac.learning.spring6restmvc.repositories;
 
 import md.vladdubceac.learning.spring6restmvc.entities.Beer;
 import md.vladdubceac.learning.spring6restmvc.entities.BeerOrder;
+import md.vladdubceac.learning.spring6restmvc.entities.BeerOrderShipment;
 import md.vladdubceac.learning.spring6restmvc.entities.Customer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,9 @@ class BeerOrderRepositoryTest {
     void testBeerOrders() {
         BeerOrder beerOrder = BeerOrder.builder()
                 .customerRef("Test order")
-                .customer(testCustomer)
+                .customer(testCustomer).beerOrderShipment(BeerOrderShipment.builder()
+                        .trackingNumber("12345r")
+                        .build())
                 .build();
 
         BeerOrder savedBeerOrder = beerOrderRepository.save(beerOrder);
