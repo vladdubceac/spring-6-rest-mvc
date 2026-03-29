@@ -1,20 +1,16 @@
 package md.vladdubceac.learning.spring6restmvc.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
+import org.hibernate.annotations.*;
 import org.hibernate.type.SqlTypes;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +20,7 @@ public class Category {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
@@ -41,13 +37,12 @@ public class Category {
 
     private String description;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(name = "beer_category",
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "beer_id"))
-    private Set<Beer> beers;
-
-
+    private Set<Beer> beers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
